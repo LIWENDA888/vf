@@ -7,9 +7,6 @@
 const DEFAULT_PREVIEW_TEXT = "自在致黑";
 
 // 初始字体列表
-// badge: 显示在字体名旁边的标签 (例如 "NEW", "免费", "Pro")，留空则不显示
-// downloadUrl: 字体的下载链接，留空则不显示下载按钮
-// axes: 定义该字体的可变轴
 const initialFonts = [
     {
         name: "自在致黑",
@@ -52,7 +49,13 @@ const dom = {
     globalInput: document.getElementById('globalTextInput'),
     aboutBtn: document.getElementById('aboutBtn'),
     aboutModal: document.getElementById('aboutModal'),
-    modalClose: document.getElementById('modalClose')
+    modalClose: document.getElementById('modalClose'),
+    
+    // --- 新增：移动端相关元素 ---
+    mobileBtn: document.getElementById('mobileSettingsBtn'),
+    sidebar: document.getElementById('sidebarPanel'),
+    sidebarClose: document.getElementById('sidebarCloseBtn'),
+    overlay: document.getElementById('mobileSidebarOverlay')
 };
 
 function init() {
@@ -66,6 +69,7 @@ function init() {
 }
 
 function setupEvents() {
+    // 字体下拉菜单逻辑
     dom.trigger.addEventListener('click', (e) => {
         const rect = dom.trigger.getBoundingClientRect();
         dom.menu.style.left = rect.left + 'px';
@@ -74,20 +78,51 @@ function setupEvents() {
         dom.menu.classList.toggle('active');
         e.stopPropagation();
     });
+
+    // 全局点击关闭菜单和模态框
     document.addEventListener('click', (e) => {
         if(!dom.menu.contains(e.target) && !dom.trigger.contains(e.target)) {
             dom.menu.classList.remove('active');
         }
         if(e.target === dom.aboutModal) dom.aboutModal.classList.remove('active');
     });
+
+    // 关于弹窗逻辑
     dom.aboutBtn.addEventListener('click', () => dom.aboutModal.classList.add('active'));
     dom.modalClose.addEventListener('click', () => dom.aboutModal.classList.remove('active'));
+
+    // --- 新增：移动端侧边栏逻辑 ---
+    if(dom.mobileBtn) {
+        dom.mobileBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            toggleSidebar(true);
+        });
+    }
+    if(dom.sidebarClose) {
+        dom.sidebarClose.addEventListener('click', () => toggleSidebar(false));
+    }
+    if(dom.overlay) {
+        dom.overlay.addEventListener('click', () => toggleSidebar(false));
+    }
+
+    // 文件上传和输入框逻辑
     dom.fileInput.addEventListener('change', handleFileUpload);
     dom.globalInput.addEventListener('input', (e) => {
         state.globalText = e.target.value;
         document.querySelectorAll('.demo-text').forEach(el => el.innerText = state.globalText);
     });
     dom.themeToggle.addEventListener('click', () => document.body.classList.toggle('dark-mode'));
+}
+
+// --- 新增：侧边栏切换函数 ---
+function toggleSidebar(isActive) {
+    if(isActive) {
+        dom.sidebar.classList.add('active');
+        dom.overlay.classList.add('active');
+    } else {
+        dom.sidebar.classList.remove('active');
+        dom.overlay.classList.remove('active');
+    }
 }
 
 function renderDropdown() {
