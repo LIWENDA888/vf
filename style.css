@@ -193,7 +193,6 @@ input[type=range]:hover::-webkit-slider-thumb { transform: scale(1.1); backgroun
     margin-bottom: 32px;
     transition: border-color 0.2s;
     animation: fadeIn 0.4s ease forwards;
-    background: rgba(0,0,0,0.02); /* 卡片内部给一点点微弱的底色区分 */
     content-visibility: auto; 
     contain-intrinsic-size: 200px; 
     overflow: hidden; 
