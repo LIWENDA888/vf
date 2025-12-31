@@ -48,7 +48,9 @@ const dom = {
     mobileBtn: document.getElementById('mobileSettingsBtn'),
     sidebar: document.getElementById('sidebarPanel'),
     sidebarClose: document.getElementById('sidebarCloseBtn'),
-    overlay: document.getElementById('mobileSidebarOverlay')
+    overlay: document.getElementById('mobileSidebarOverlay'),
+    // 新增：通知按钮 DOM
+    notifyBtn: document.getElementById('notifyBtn')
 };
 
 function init() {
@@ -62,6 +64,13 @@ function init() {
     state.activeIndices.forEach(idx => loadFontAsync(idx)); // 预加载默认字体
     updateUI(); // 初始渲染
     setupEvents();
+
+    // 新增：3.5秒后自动收起通知
+    if(dom.notifyBtn) {
+        setTimeout(() => {
+            dom.notifyBtn.classList.add('collapsed');
+        }, 3500);
+    }
 }
 
 function setupEvents() {
@@ -195,7 +204,7 @@ function handleFileUpload(e) {
 // 核心：更新 UI 与 生成控件
 function updateUI() {
     const count = state.activeIndices.size;
-    dom.fontCount.textContent = `${count} Active`;
+    dom.fontCount.textContent = `已选择 ${count} 款字体`;
     dom.triggerText.textContent = count === 0 ? "选择字体..." : (count === 1 ? state.fonts[[...state.activeIndices][0]].name : `${count} 款字体`);
 
     // 清空 Canvas 并重新生成

@@ -93,6 +93,72 @@ body {
 
 #mobileSettingsBtn { display: none; margin-right: auto; }
 
+/* 通知药丸按钮样式 (核心交互逻辑)
+   =============================
+*/
+.notify-pill {
+    display: flex; 
+    align-items: center; 
+    justify-content: flex-end; /* 确保收缩时内容靠右 */
+    height: 34px;
+    background: var(--text-main); /* 默认展开背景：深色醒目 */
+    color: var(--bg-body);       /* 默认展开文字：反色 */
+    border-radius: 17px;         /* 默认胶囊圆角 */
+    padding: 0;
+    text-decoration: none;
+    overflow: hidden;
+    
+    /* 核心动画：控制最大宽度 */
+    max-width: 260px;
+    transition: all 0.6s cubic-bezier(0.19, 1, 0.22, 1); 
+    cursor: pointer;
+    border: 1px solid transparent;
+}
+
+/* 状态：自动收缩后 */
+.notify-pill.collapsed {
+    max-width: 34px;     /* 缩成小圆 */
+    border-radius: 10px; /* 变成和其他按钮一样的圆角 */
+    background: transparent; 
+    color: var(--text-main);
+}
+
+/* 状态：收缩状态下悬浮 (Hover Expand) - 核心修改点 */
+/* 这里的优先级高于 .collapsed，所以悬浮时会覆盖上面的样式，强制展开 */
+.notify-pill.collapsed:hover {
+    max-width: 260px;             /* 恢复宽度 */
+    background: var(--text-main); /* 恢复醒目背景 */
+    color: var(--bg-body);        /* 恢复反色文字 */
+    border-radius: 17px;          /* 恢复胶囊圆角 */
+}
+
+.notify-content {
+    font-size: 13px; font-weight: 600; white-space: nowrap;
+    padding-left: 14px; padding-right: 4px;
+    opacity: 1; transition: opacity 0.3s ease;
+}
+
+/* 收缩时隐藏文字 */
+.notify-pill.collapsed .notify-content { 
+    opacity: 0; 
+    pointer-events: none; 
+}
+
+/* 悬浮展开时，让文字重新显示 - 核心修改点 */
+.notify-pill.collapsed:hover .notify-content {
+    opacity: 1;
+    pointer-events: auto;
+    transition-delay: 0.1s; /* 稍微延迟一点点显示文字，视觉更自然 */
+}
+
+.notify-icon {
+    width: 34px; height: 34px; 
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+}
+.notify-icon svg { width: 18px; height: 18px; stroke-width: 2px; }
+
+
 /* 主布局 */
 .app-container {
     flex: 1; display: flex; padding: 0 24px 24px 24px; gap: var(--gap);
