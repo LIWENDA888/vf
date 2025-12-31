@@ -93,9 +93,7 @@ body {
 
 #mobileSettingsBtn { display: none; margin-right: auto; }
 
-/* 通知药丸按钮样式 (核心交互逻辑)
-   =============================
-*/
+/* 通知药丸按钮样式 (核心交互逻辑) */
 .notify-pill {
     display: flex; 
     align-items: center; 
@@ -123,8 +121,7 @@ body {
     color: var(--text-main);
 }
 
-/* 状态：收缩状态下悬浮 (Hover Expand) - 核心修改点 */
-/* 这里的优先级高于 .collapsed，所以悬浮时会覆盖上面的样式，强制展开 */
+/* 状态：收缩状态下悬浮 (Hover Expand) */
 .notify-pill.collapsed:hover {
     max-width: 260px;             /* 恢复宽度 */
     background: var(--text-main); /* 恢复醒目背景 */
@@ -144,7 +141,7 @@ body {
     pointer-events: none; 
 }
 
-/* 悬浮展开时，让文字重新显示 - 核心修改点 */
+/* 悬浮展开时，让文字重新显示 */
 .notify-pill.collapsed:hover .notify-content {
     opacity: 1;
     pointer-events: auto;
@@ -317,11 +314,23 @@ input[type=range]:active::-webkit-slider-thumb { transform: scale(1.0); backgrou
     font-variation-settings: var(--vf-final-settings); /* 使用父级变量 */
     line-height: 1.1; text-align: left; outline: none; 
     color: var(--text-main); cursor: text;
-    white-space: pre-wrap; word-break: break-word;          
+    
+    /* 1. 保持单行 */
+    white-space: pre; 
+    /* 2. 保持可滚动（让光标能顶过去） */
+    overflow-x: auto; 
+    /* 3. 隐藏 Firefox 滚动条 */
+    scrollbar-width: none; 
+    
     max-width: 100%;           
     padding: 4px 0;
-    transition: font-size 0.1s, letter-spacing 0.1s; /* 平滑过渡布局变化 */
-    will-change: font-variation-settings; /* 提示浏览器优化 */
+    transition: font-size 0.1s, letter-spacing 0.1s; 
+    will-change: font-variation-settings; 
+}
+
+/* 4. 隐藏 Chrome/Safari 滚动条 */
+.demo-text::-webkit-scrollbar {
+    display: none;
 }
 
 .empty-tip { 

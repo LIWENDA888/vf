@@ -204,8 +204,8 @@ function handleFileUpload(e) {
 // 核心：更新 UI 与 生成控件
 function updateUI() {
     const count = state.activeIndices.size;
-    dom.fontCount.textContent = `已选择 ${count} 款字体`;
-    dom.triggerText.textContent = count === 0 ? "选择字体..." : (count === 1 ? state.fonts[[...state.activeIndices][0]].name : `${count} 款字体`);
+    dom.fontCount.textContent = `已选 ${count} 款`;
+    dom.triggerText.textContent = count === 0 ? "选择字体..." : (count === 1 ? state.fonts[[...state.activeIndices][0]].name : `已选择 ${count} 款字体`);
 
     // 清空 Canvas 并重新生成
     dom.canvas.innerHTML = '';
@@ -262,13 +262,13 @@ function generateControls(vfAxes) {
     // 1. 布局滑块组 (System Axes)
     const layoutAxes = [
         { tag: 'size', name: '字号 Size', min: 12, max: 200, default: 64, step: 1, isSystem: true, suffix: 'px' },
-        { tag: 'spacing', name: '间距 Spacing', min: -0.1, max: 1, default: 0, step: 0.01, isSystem: true, suffix: 'em' }
+        { tag: 'spacing', name: '字距 Spacing', min: -0.1, max: 1, default: 0, step: 0.01, isSystem: true, suffix: 'em' }
     ];
-    dom.controls.appendChild(buildSection('布局参数', layoutAxes));
+    dom.controls.appendChild(buildSection('布局滑块', layoutAxes));
 
     // 2. 可变滑块组 (VF Axes)
     if (vfAxes.length > 0) {
-        dom.controls.appendChild(buildSection('可变轴参数', vfAxes));
+        dom.controls.appendChild(buildSection('可变滑块', vfAxes));
     }
 }
 
@@ -282,7 +282,7 @@ function buildSection(title, axes) {
     
     const resetBtn = document.createElement('button');
     resetBtn.className = 'reset-btn';
-    resetBtn.title = '重置此组参数';
+    resetBtn.title = '重置参数';
     resetBtn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>`;
     
     const controlRefs = []; 
