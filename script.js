@@ -2,14 +2,15 @@
    STATE & CONFIG (OPTIMIZED)
    ================================================================= */
 const state = {
-    fonts: [{
+    fonts: [
+        {
         name: "自在致黑",
-        src: "https://pic3.fukit.cn/autoupload/NWINCyTOTWqNUcPQazQq69iO_OyvX7mIgxFBfDMDErs/20251123/1g4K/ZizaiZhiSansV2-VF.ttf", 
+        src: "123.ttf", 
         badge: "免费", 
         downloadUrl: "https://www.zizao.top/fonts/zizaizhisans",
-        // axes 移除了硬编码，将自动识别
         axes: null 
-    }],
+        }
+],
     activeIndices: new Set([0]),
     global: { size: 72, height: 1.1, spacing: 0 },
     fontSettings: {}, 
