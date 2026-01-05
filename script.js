@@ -243,8 +243,9 @@ function renderGlobalControls() {
     dom.globalControls.innerHTML = '';
     const axes = [
         { tag: 'size', name: '字号', min: 12, max: 200, step: 1, suffix: 'px' },
-        { tag: 'height', name: '字距', min: 0.8, max: 2.5, step: 0.05, suffix: '' },
-        { tag: 'spacing', name: '行距', min: -0.1, max: 0.5, step: 0.01, suffix: 'em' }
+        { tag: 'spacing', name: '字距', min: -0.1, max: 0.5, step: 0.01, suffix: 'em' },
+        { tag: 'height', name: '行距', min: 0.8, max: 2.5, step: 0.05, suffix: '' }
+
     ];
 
     axes.forEach(axis => {
