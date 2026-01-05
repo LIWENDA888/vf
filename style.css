@@ -13,6 +13,7 @@
     --text-secondary: #666666;
     --text-tertiary: #999999;
     --accent-color: #000000;
+    --accent-fg: #FFFFFF;
 
     --container-radius: 12px;
     --vf-size: 72px; --vf-spacing: 0em; --vf-height: 1.1;
@@ -28,6 +29,7 @@ body.dark-mode {
     --text-secondary: #999999;
     --text-tertiary: #555555;
     --accent-color: #FFFFFF;
+    --accent-fg: #000000;
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; outline: none; -webkit-font-smoothing: antialiased; }
@@ -44,7 +46,7 @@ body {
 ::-webkit-scrollbar-thumb { background: var(--border-light); border-radius: 4px; }
 ::-webkit-scrollbar-thumb:hover { background: var(--text-secondary); }
 
-/* 容器通用样式：合并代码以减小体积 */
+/* 容器通用样式 */
 .rounded-container-box, .global-text-input, .library-list, .font-card {
     border: 1.3px solid var(--border-light);
     border-radius: var(--container-radius);
@@ -103,35 +105,75 @@ body.dark-mode .app-logo-img { filter: invert(1); }
 .control-group { margin-bottom: 24px; }
 .control-group.flex-grow { display: flex; flex-direction: column; margin-bottom: 0; flex: 1; min-height: 0; }
 .global-text-input { width: 100%; min-height: 80px; padding: 12px; color: var(--text-primary); font: inherit; font-size: 14px; resize: none; line-height: 1.5; }
-.library-list { overflow-y: auto; flex: 1; padding: 4px; min-height: 100px; }
 
-/* -------------------------------------------------------------
-   核心修复区域：列表交互
-   ------------------------------------------------------------- */
-.library-item {
-    padding: 10px 12px; border-radius: 6px; font-size: 13px; font-weight: 500;
-    display: flex; align-items: center; justify-content: space-between;
-    cursor: pointer; transition: background 0.15s, color 0.15s; margin-bottom: 2px;
-    color: var(--text-secondary); 
-    border: none; background: transparent; /* 默认透明 */
+/* 列表容器 */
+.library-list { 
+    overflow-y: auto; 
+    flex: 1; 
+    padding: 0; 
+    min-height: 100px; 
 }
 
-/* 1. 先定义 Active：只变文字颜色和粗细，背景保持透明 */
+/* 列表项交互：修复长文本挤压问题 */
+.library-item {
+    padding: 12px 16px;
+    border-radius: 0;
+    font-size: 13px; 
+    font-weight: 500;
+    display: flex; 
+    align-items: center; 
+    justify-content: space-between;
+    cursor: pointer; 
+    transition: background 0.15s, color 0.15s; 
+    margin-bottom: 0;
+    color: var(--text-secondary); 
+    border: none; 
+    background: transparent; 
+    border-bottom: 1px solid var(--border-light);
+}
+
+.library-item:last-child {
+    border-bottom: none;
+}
+
 .library-item.active {
     color: var(--text-primary);
     font-weight: 600;
     background-color: transparent; 
 }
 
-/* 2. 后定义 Hover：优先级更高，只要悬浮就给背景 */
 .library-item:hover {
-    background-color: var(--bg-surface-hover) !important; /* 强制显示背景 */
+    background-color: var(--bg-surface-hover) !important; 
     color: var(--text-primary);
 }
 
-.lib-name { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 160px; }
+/* 新增：文字信息容器，允许收缩 */
+.library-item-info {
+    flex: 1;            /* 自动占据剩余空间 */
+    min-width: 0;       /* 关键：允许 flex 子项收缩到小于内容宽度，触发省略 */
+    margin-right: 12px; /* 与右侧按钮保持距离 */
+}
 
-.toggle-switch { width: 36px; height: 20px; background: var(--border-light); border-radius: 20px; position: relative; transition: 0.2s; }
+/* 修改：字体名称自适应 */
+.lib-name { 
+    white-space: nowrap; 
+    overflow: hidden; 
+    text-overflow: ellipsis; 
+    display: block;     /* 确保占满容器 */
+    max-width: 100%;    /* 移除固定宽度，改为100% */
+}
+
+/* 修改：开关禁止压缩 */
+.toggle-switch { 
+    width: 36px; 
+    height: 20px; 
+    background: var(--border-light); 
+    border-radius: 20px; 
+    position: relative; 
+    transition: 0.2s; 
+    flex-shrink: 0;     /* 关键：防止被长文本挤压 */
+}
+
 .toggle-switch.on { background: var(--accent-color); }
 .toggle-handle { width: 16px; height: 16px; background: #FFF; border-radius: 50%; position: absolute; top: 2px; left: 2px; transition: 0.2s cubic-bezier(0.2, 0.8, 0.2, 1); box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
 .toggle-switch.on .toggle-handle { transform: translateX(16px); }
@@ -161,16 +203,72 @@ input[type=range].macos-slider:hover::-webkit-slider-thumb { transform: scale(1.
 .inline-axis-control:hover { border-color: var(--border-hover); }
 .axis-tag { font-size: 10px; font-weight: 700; color: var(--text-secondary); text-transform: uppercase; width: 32px; }
 .axis-val { font-size: 10px; font-family: "SF Mono", monospace; width: 24px; text-align: right; }
-.play-btn { width: 16px; height: 16px; border-radius: 4px; border: 1px solid var(--border-light); background: transparent; color: var(--text-secondary); display: flex; align-items: center; justify-content: center; cursor: pointer; padding: 0; }
-.play-btn:hover { border-color: var(--border-hover); color: var(--text-primary); }
-.play-btn.active { background: var(--accent-color); color: var(--accent-fg); border-color: var(--accent-color); }
+
+/* 播放按钮 (去描边，小尺寸) */
+.play-btn { 
+    width: 18px; 
+    height: 18px; 
+    border-radius: 4px; 
+    border: none; 
+    background: transparent; 
+    color: var(--text-secondary); 
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+    cursor: pointer; 
+    padding: 0; 
+    transition: all 0.2s ease;
+    flex-shrink: 0; 
+}
+
+.play-btn:hover { 
+    color: var(--text-primary); 
+    background-color: var(--bg-surface-hover);
+}
+
+.play-btn.active { 
+    background: var(--accent-color); 
+    color: var(--accent-fg); 
+    box-shadow: 0 1px 2px rgba(0,0,0,0.1); 
+}
+
 input[type=range].macos-slider.mini { width: 70px; height: 14px; }
 input[type=range].macos-slider.mini::-webkit-slider-thumb { height: 10px; width: 10px; margin-top: -4.5px; border-width: 1px; }
 
-.card-actions { display: flex; gap: 8px; margin-left: auto; }
-.card-action-btn { background: transparent; border: 1px solid transparent; cursor: pointer; padding: 6px; border-radius: 4px; color: var(--text-secondary); display: flex; transition: 0.2s; }
-.card-action-btn:hover { border-color: var(--border-light); color: var(--text-primary); }
-.card-action-btn.close:hover { border-color: #FF3B30; color: #FF3B30; }
+/* 卡片操作区 */
+.card-actions { 
+    display: flex; 
+    gap: 6px; 
+    margin-left: auto; 
+    align-items: center; 
+}
+
+.card-action-btn { 
+    width: 28px; 
+    height: 28px;
+    background: transparent; 
+    border: 1px solid transparent; 
+    cursor: pointer; 
+    padding: 0; 
+    border-radius: 6px; 
+    color: var(--text-secondary); 
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+    transition: all 0.2s cubic-bezier(0.25, 0.1, 0.25, 1); 
+}
+
+.card-action-btn:hover { 
+    background-color: var(--bg-surface-hover); 
+    border-color: var(--border-light); 
+    color: var(--text-primary); 
+}
+
+.card-action-btn.close:hover { 
+    background-color: rgba(255, 59, 48, 0.1); 
+    border-color: rgba(255, 59, 48, 0.3);      
+    color: #FF3B30;                            
+}
 
 .demo-text-wrapper { overflow-x: auto; padding: 32px 40px; }
 .demo-text-wrapper::-webkit-scrollbar { display: none; }
