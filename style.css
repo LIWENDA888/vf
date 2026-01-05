@@ -46,7 +46,7 @@ body {
 
 /* 容器通用样式：合并代码以减小体积 */
 .rounded-container-box, .global-text-input, .library-list, .font-card {
-    border: 1px solid var(--border-light);
+    border: 1.3px solid var(--border-light);
     border-radius: var(--container-radius);
     background: transparent;
     transition: border-color 0.2s ease;
