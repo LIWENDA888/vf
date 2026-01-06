@@ -5,7 +5,7 @@
     --bg-root: #FFFFFF;
     --bg-surface-hover: #F5F5F7;
     
-    --border-light: #E0E0E0;
+    --border-light: #C0C0C0;
     --border-hover: #666666;
     --border-active: #000000;
 
@@ -20,9 +20,9 @@
 }
 
 body.dark-mode {
-    --bg-root: #000000;
+    --bg-root: #181818;
     --bg-surface-hover: #1C1C1E;
-    --border-light: #333333;
+    --border-light: #484848;
     --border-hover: #999999;
     --border-active: #FFFFFF;
     --text-primary: #FFFFFF;
