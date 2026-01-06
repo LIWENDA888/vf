@@ -74,8 +74,10 @@ body {
 }
 .nav-left, .nav-actions { display: flex; align-items: center; gap: 20px; }
 .nav-actions { gap: 8px; }
-.app-logo-img { height: 22px; width: auto; display: block; }
-body.dark-mode .app-logo-img { filter: invert(1); }
+.app-logo-img { height: 22px; width: auto; display: block; transition: filter 0.3s; }
+body.dark-mode .app-logo-img { 
+    filter: invert(1) grayscale(1) brightness(10); 
+}
 .nav-links { display: flex; gap: 32px; position: absolute; left: 50%; transform: translateX(-50%); }
 .nav-link { text-decoration: none; color: var(--text-secondary); font-size: 13px; font-weight: 500; transition: color 0.2s; }
 .nav-link:hover { color: var(--text-primary); }
