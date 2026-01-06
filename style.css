@@ -172,12 +172,12 @@ body.dark-mode .app-logo-img { filter: invert(1); }
 }
 
 .toggle-switch.on { background: var(--accent-color); }
-.toggle-handle { width: 16px; height: 16px; background: #FFF; border-radius: 50%; position: absolute; top: 2px; left: 2px; transition: 0.2s cubic-bezier(0.2, 0.8, 0.2, 1); box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+.toggle-handle { width: 16px; height: 16px; background: var(--bg-root); border-radius: 50%; position: absolute; top: 2px; left: 2px; transition: 0.2s cubic-bezier(0.2, 0.8, 0.2, 1); box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
 .toggle-switch.on .toggle-handle { transform: translateX(16px); }
 
 .control-row.compact { margin-bottom: 12px; }
 .control-label { display: flex; justify-content: space-between; font-size: 11px; margin-bottom: 6px; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; }
-.val-display { font-family: "SF Mono", monospace; color: var(--text-primary); }
+.val-display { color: var(--text-primary); }
 .slider-container { display: flex; align-items: center; gap: 10px; }
 
 input[type=range].macos-slider { -webkit-appearance: none; width: 100%; background: transparent; height: 20px; cursor: pointer; }
@@ -203,17 +203,17 @@ input[type=range].macos-slider:hover::-webkit-slider-thumb { transform: scale(1.
     align-items: center; 
     gap: 8px; 
     border: 1px solid var(--border-light); 
-    padding: 6px 14px; /* 修改：略微增大容器内边距 */
+    padding: 6px 14px; 
     border-radius: var(--container-radius); 
     transition: 0.2s; 
 }
 .inline-axis-control:hover { border-color: var(--border-hover); }
 .axis-tag { font-size: 10px; font-weight: 700; color: var(--text-secondary); text-transform: uppercase; width: 32px; }
-.axis-val { font-size: 10px; font-family: "SF Mono", monospace; width: 24px; text-align: right; }
+.axis-val { font-size: 10px; width: 24px; text-align: right; }
 
-/* 播放按钮 - 修改尺寸与激活态 */
+/* 播放按钮 */
 .play-btn { 
-    width: 20px; /* 修改：更紧凑的点击区域 */
+    width: 20px; 
     height: 20px; 
     border-radius: 4px; 
     border: none; 
@@ -228,23 +228,9 @@ input[type=range].macos-slider:hover::-webkit-slider-thumb { transform: scale(1.
     flex-shrink: 0; 
 }
 
-/* 强制图标尺寸为12px */
-.play-btn svg {
-    width: 12px;
-    height: 12px;
-}
-
-.play-btn:hover { 
-    color: var(--text-primary); 
-    background-color: var(--bg-surface-hover);
-}
-
-/* 激活状态（暂停按钮） - 去除黑色背景 */
-.play-btn.active { 
-    background: transparent; /* 修改：去除填充背景 */
-    color: var(--text-primary); /* 修改：图标变深色表示激活 */
-    box-shadow: none;
-}
+.play-btn svg { width: 12px; height: 12px; }
+.play-btn:hover { color: var(--text-primary); background-color: var(--bg-surface-hover); }
+.play-btn.active { background: transparent; color: var(--text-primary); box-shadow: none; }
 
 input[type=range].macos-slider.mini { width: 70px; height: 14px; }
 input[type=range].macos-slider.mini::-webkit-slider-thumb { height: 10px; width: 10px; margin-top: -4.5px; border-width: 1px; }
@@ -314,6 +300,32 @@ body.dark-mode .modal-overlay { background: rgba(0,0,0,0.9); }
     .sidebar { position: fixed; top: 0; left: 0; height: 100vh; width: 85%; max-width: 320px; transform: translateX(-100%); box-shadow: 10px 0 40px rgba(0,0,0,0.1); z-index: 200; }
     .sidebar.active { transform: translateX(0); } .sidebar-close-btn { display: block; }
     .canvas-area { padding: 20px; }
-    .font-card-header { flex-direction: column; align-items: flex-start; gap: 12px; }
-    .card-controls-inline, .card-actions { width: 100%; margin-left: 0; } .card-actions { justify-content: flex-end; }
+    
+    /* 修复：移动端字体卡片头部布局 */
+    .font-card-header { 
+        flex-direction: column; 
+        align-items: flex-start; 
+        gap: 12px; 
+        position: relative; /* 为绝对定位按钮提供基准 */
+    }
+
+    /* 限制字体名称宽度，防止遮挡右上角按钮 */
+    .font-identity {
+        max-width: calc(100% - 80px);
+    }
+    
+    .card-controls-inline { 
+        width: 100%; 
+        margin-left: 0; 
+    } 
+
+    /* 修复：将操作按钮绝对定位到右上角 */
+    .card-actions { 
+        position: absolute;
+        top: 12px;
+        right: 20px;
+        width: auto;
+        margin-left: 0; 
+        justify-content: flex-end; 
+    }
 }
