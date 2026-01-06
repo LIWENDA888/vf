@@ -177,7 +177,10 @@ body.dark-mode .app-logo-img { filter: invert(1); }
 
 .control-row.compact { margin-bottom: 12px; }
 .control-label { display: flex; justify-content: space-between; font-size: 11px; margin-bottom: 6px; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; }
-.val-display { color: var(--text-primary); }
+
+/* 修改：数字不再加粗，字号调小至10px */
+.val-display { color: var(--text-primary); font-weight: 400; font-size: 10px; }
+
 .slider-container { display: flex; align-items: center; gap: 10px; }
 
 input[type=range].macos-slider { -webkit-appearance: none; width: 100%; background: transparent; height: 20px; cursor: pointer; }
@@ -301,15 +304,13 @@ body.dark-mode .modal-overlay { background: rgba(0,0,0,0.9); }
     .sidebar.active { transform: translateX(0); } .sidebar-close-btn { display: block; }
     .canvas-area { padding: 20px; }
     
-    /* 修复：移动端字体卡片头部布局 */
     .font-card-header { 
         flex-direction: column; 
         align-items: flex-start; 
         gap: 12px; 
-        position: relative; /* 为绝对定位按钮提供基准 */
+        position: relative; 
     }
 
-    /* 限制字体名称宽度，防止遮挡右上角按钮 */
     .font-identity {
         max-width: calc(100% - 80px);
     }
@@ -319,7 +320,6 @@ body.dark-mode .modal-overlay { background: rgba(0,0,0,0.9); }
         margin-left: 0; 
     } 
 
-    /* 修复：将操作按钮绝对定位到右上角 */
     .card-actions { 
         position: absolute;
         top: 12px;

@@ -17,7 +17,7 @@ const state = {
     loadedFamilies: {},
     animations: {}, 
     isLoopRunning: false,
-    globalText: "自在致黑 Variable"
+    globalText: "自在致黑"
 };
 
 const $ = (id) => document.getElementById(id);
