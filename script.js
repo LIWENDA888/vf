@@ -40,6 +40,7 @@ const dynamicAxesContainer = document.getElementById('dynamic-axes-container');
 const fontTrigger = document.getElementById('font-trigger');
 const fontListPopup = document.getElementById('font-list-popup');
 const currentFontNameEl = document.getElementById('current-font-name');
+const externalLinkBtn = document.getElementById('font-link-btn');
 
 // Data Helpers
 const getGroupedData = () => state.currentTab === 'lab' ? labData : libData;
@@ -50,15 +51,62 @@ const getFlatData = () => {
     return flat;
 };
 
+const findFontById = (id) => {
+    for (const group of labData) {
+        const found = group.items.find(f => f.id === id);
+        if (found) return { font: found, tab: 'lab' };
+    }
+    for (const group of libData) {
+        const found = group.items.find(f => f.id === id);
+        if (found) return { font: found, tab: 'lib' };
+    }
+    return null;
+};
+
 document.addEventListener('DOMContentLoaded', () => {
     initCanvasControls();
     initHubInteraction();
     initThemeControls();
     initFontControls();
-    loadFont(0);
+    initHashNav();
     centerCanvas();
     updateGlider();
 });
+
+function initHashNav() {
+    // Initial Load
+    const hash = window.location.hash.substring(1);
+    if (hash) loadFromHash(hash);
+    else loadFont(0);
+
+    // Hash Change Listener
+    window.addEventListener('hashchange', () => {
+        const hash = window.location.hash.substring(1);
+        if (hash) loadFromHash(hash);
+    });
+}
+
+function loadFromHash(id) {
+    const result = findFontById(id);
+    if (result) {
+        switchTab(result.tab);
+        const flat = getFlatData();
+        const idx = flat.findIndex(f => f.id === id);
+        if (idx !== -1) loadFont(idx, false); // false = don't push hash again
+    }
+}
+
+function switchTab(tab) {
+    document.querySelectorAll('.menu-item').forEach(i => {
+        if(i.dataset.target === tab) i.classList.add('active');
+        else i.classList.remove('active');
+    });
+    
+    state.currentTab = tab;
+    document.body.classList.remove('view-mode-lab', 'view-mode-lib');
+    document.body.classList.add(`view-mode-${tab}`);
+    previewCharEl.contentEditable = (tab === 'lib') ? "true" : "false";
+}
 
 function centerCanvas() {
     state.pan.x = window.innerWidth / 2;
@@ -66,23 +114,19 @@ function centerCanvas() {
     updateCanvasTransform();
 }
 
-// --- 1. Canvas ---
 function initCanvasControls() {
     canvasWrapper.addEventListener('wheel', (e) => {
         if (e.ctrlKey || e.metaKey) {
             e.preventDefault();
             const mouseX = e.clientX;
             const mouseY = e.clientY;
-
             const worldX = (mouseX - state.pan.x) / state.zoom;
             const worldY = (mouseY - state.pan.y) / state.zoom;
-
             const step = 0.05;
             const delta = e.deltaY > 0 ? -step : step;
             let newZoom = state.zoom + delta;
             newZoom = Math.round(newZoom * 100) / 100;
             newZoom = Math.min(Math.max(0.1, newZoom), 5);
-
             state.pan.x = mouseX - worldX * newZoom;
             state.pan.y = mouseY - worldY * newZoom;
             state.zoom = newZoom;
@@ -137,7 +181,6 @@ function updateCanvasTransform() {
     zoomLevelEl.textContent = `${Math.round(state.zoom * 100)}%`;
 }
 
-// --- 2. Hub & Theme ---
 function initHubInteraction() {
     hubHeader.addEventListener('click', (e) => {
         e.stopPropagation();
@@ -148,17 +191,8 @@ function initHubInteraction() {
 
     document.querySelectorAll('.menu-item[data-action="tab"]').forEach(item => {
         item.addEventListener('click', () => {
-            document.querySelectorAll('.menu-item').forEach(i => i.classList.remove('active'));
-            item.classList.add('active');
-            
-            const target = item.dataset.target;
-            state.currentTab = target;
-            
-            document.body.classList.remove('view-mode-lab', 'view-mode-lib');
-            document.body.classList.add(`view-mode-${target}`);
-            
-            previewCharEl.contentEditable = (target === 'lib') ? "true" : "false";
-            loadFont(0);
+            switchTab(item.dataset.target);
+            loadFont(0); // Load first font of tab
         });
     });
 }
@@ -231,7 +265,6 @@ function updateGlider() {
     }
 }
 
-// --- 3. Fonts ---
 function initFontControls() {
     fontTrigger.addEventListener('click', (e) => {
         e.stopPropagation();
@@ -271,19 +304,40 @@ function getGroupIndexByFontIndex(flatIndex) {
     return 0;
 }
 
-function loadFont(index) {
+async function loadFont(index, updateHash = true) {
     stopAllAnimations();
     const flatData = getFlatData();
     if (!flatData[index]) return;
 
     state.currentFontIndex = index;
     const font = flatData[index];
-    
     state.openGroupIndex = getGroupIndexByFontIndex(index);
 
     currentFontNameEl.textContent = font.name.split(' ')[0];
     previewCharEl.textContent = font.previewChar;
     
+    if (updateHash) {
+        window.history.replaceState(null, null, `#${font.id}`);
+    }
+
+    if (state.currentTab === 'lib' && font.link) {
+        externalLinkBtn.href = font.link;
+        externalLinkBtn.classList.remove('hidden');
+    } else {
+        externalLinkBtn.classList.add('hidden');
+    }
+
+    if (font.url) {
+        try {
+            const fontFace = new FontFace(font.id, `url(${font.url})`);
+            const loadedFace = await fontFace.load();
+            document.fonts.add(loadedFace);
+            previewCharEl.style.fontFamily = font.id;
+        } catch (e) {
+            console.warn("Font loading failed.", e);
+        }
+    }
+
     previewCharEl.style.animation = 'none';
     previewCharEl.offsetHeight;
     previewCharEl.style.animation = 'fadeIn 0.6s cubic-bezier(0.25, 1, 0.5, 1)';
@@ -317,7 +371,7 @@ function renderFontList() {
             const currentFlatIndex = globalIndexCounter + fIndex;
             const item = document.createElement('div');
             item.className = `font-option ${currentFlatIndex === state.currentFontIndex ? 'selected' : ''}`;
-            item.innerHTML = `<span>${font.name}</span>`; // Removed preview char span
+            item.innerHTML = `<span>${font.name}</span>`;
             
             item.addEventListener('click', () => {
                 loadFont(currentFlatIndex);
@@ -337,22 +391,20 @@ function renderFontList() {
 function generateAxes(axes) {
     dynamicAxesContainer.innerHTML = '';
     state.currentAxisValues = {};
+    if (!axes) return;
 
     axes.forEach(axis => {
         state.currentAxisValues[axis.tag] = axis.default;
         const group = document.createElement('div');
         group.className = 'axis-group';
-        
         const header = document.createElement('div');
         header.className = 'axis-header';
         const label = document.createElement('span');
         label.className = 'label';
         label.textContent = axis.name;
-
         const playBtn = document.createElement('button');
         playBtn.className = 'auto-play-btn';
         playBtn.innerHTML = `<svg viewBox="0 0 24 24" fill="currentColor" width="12" height="12"><path d="M8 5v14l11-7z"/></svg>`;
-        
         const slider = document.createElement('input');
         slider.type = 'range';
         slider.min = axis.min;
