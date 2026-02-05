@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>可变实验室Variable Studio</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+</head>
+<!-- 修复：默认添加 grid-on 类，确保初始网格可见 -->
+<body class="bg-mode-plain view-mode-lab grid-on">
+
+    <!-- 1. 背景层系统 -->
+    <div class="background-system">
+        <!-- 基础纯色层 -->
+        <div class="bg-layer plain-layer"></div>
+        
+        <!-- 流体层 -->
+        <div class="bg-layer fluid-layer">
+            <div class="blob blob-1"></div>
+            <div class="blob blob-2"></div>
+            <div class="blob blob-3"></div>
+        </div>
+
+        <!-- 自定义图片层 -->
+        <div class="bg-layer image-layer" id="custom-bg-layer"></div>
+
+        <!-- 网格覆盖层 (独立开关) -->
+        <div class="bg-layer grid-overlay" id="grid-layer"></div>
+        
+        <!-- 柔光叠加 -->
+        <div class="glow-overlay"></div>
+    </div>
+
+    <!-- 隐藏的文件上传 input -->
+    <input type="file" id="bg-upload" accept="image/*" style="display: none;">
+
+    <!-- 2. UI 层 -->
+    <div class="ui-layer">
+        
+        <!-- 左上角：控制中枢 -->
+        <nav class="control-hub glass expanded" id="control-hub">
+            <div class="hub-header">
+                <div class="logo-wrapper">
+                    <img src="https://pic3.fukit.cn/autoupload/NWINCyTOTWqNUcPQazQq69iO_OyvX7mIgxFBfDMDErs/20251218/mAPB/logo.svg" alt="Zizai Logo" class="wide-logo">
+                </div>
+                <div class="toggle-icon">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+                </div>
+            </div>
+
+            <div class="hub-content">
+                <!-- 菜单 -->
+                <div class="menu-group">
+                    <div class="menu-label">分类菜单</div>
+                    <div class="menu-item active" data-action="tab" data-target="lab">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 2v7.31L6 18h12l-4-8.69V2h-4z"></path></svg>
+                        <span>实验室 (Lab)</span>
+                    </div>
+                    <div class="menu-item" data-action="tab" data-target="lib">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+                        <span>字体库 (Library)</span>
+                    </div>
+                    <a href="https://github.com" target="_blank" class="menu-item link-item">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17L16.2 7.8M17 17V7H7"/></svg>
+                        <span>GitHub</span>
+                    </a>
+                </div>
+
+                <div class="divider"></div>
+
+                <!-- 外观设置 -->
+                <div class="theme-group">
+                    <div class="menu-label">外观设置</div>
+                    
+                    <div class="theme-control-row">
+                        <span>深色模式</span>
+                        <div class="toggle-switch" id="dark-mode-switch">
+                            <div class="switch-knob"></div>
+                        </div>
+                    </div>
+
+                    <div class="theme-control-row">
+                        <span>显示网格</span>
+                        <div class="toggle-switch active" id="grid-switch">
+                            <div class="switch-knob"></div>
+                        </div>
+                    </div>
+
+                    <div class="theme-control-row">
+                        <span>文字反色</span>
+                        <div class="toggle-switch" id="inverse-switch">
+                            <div class="switch-knob"></div>
+                        </div>
+                    </div>
+
+                    <!-- 背景切换 -->
+                    <div class="theme-control-row" style="margin-top: 12px;">
+                        <div class="segmented-control" id="bg-switcher">
+                            <div class="sc-glider"></div>
+                            <button class="sc-btn active" data-bg="plain">纯净</button>
+                            <button class="sc-btn" data-bg="fluid">流体</button>
+                            <button class="sc-btn icon-btn" data-bg="image" title="添加本地图片">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <!-- 右上角：缩放指示器 -->
+        <div class="zoom-indicator glass">
+            <span id="zoom-level">100%</span>
+        </div>
+
+        <!-- 底部：动态参数岛 -->
+        <div class="bottom-island glass">
+            <div class="font-list-popup glass hidden" id="font-list-popup">
+                <!-- JS 注入 -->
+            </div>
+
+            <div class="controls-container">
+                <div class="fixed-controls">
+                    <div class="control-item font-trigger" id="font-trigger">
+                        <div class="label">当前字体</div>
+                        <div class="value-display">
+                            <span id="current-font-name">Loading</span>
+                            <svg class="icon-up" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 15l-6-6-6 6"/></svg>
+                        </div>
+                    </div>
+                </div>
+                <div class="divider-v"></div>
+                <div class="dynamic-axes" id="dynamic-axes-container"></div>
+            </div>
+        </div>
+
+        <!-- 全局版权声明 -->
+        <div class="global-copyright">
+            © 2026 Zizai Type Lab. Experimental Variable Fonts Project.
+        </div>
+    </div>
+
+    <!-- 5. 画布层 -->
+    <div class="canvas-wrapper" id="canvas-wrapper">
+        <div class="canvas-content" id="canvas-content">
+            <div id="preview-char" class="preview-char" spellcheck="false">A</div>
+        </div>
+    </div>
+
+    <script src="lab.js"></script>
+    <script src="lib.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
